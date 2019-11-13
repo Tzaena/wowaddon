@@ -2,16 +2,17 @@ local EventFrame = CreateFrame("Frame")
 EventFrame:RegisterEvent("LOOT_OPENED")
 EventFrame:SetScript("OnEvent", function(self,event,...) 
 	getInfos()
+	LogAnything_Frame:Show()
 end)
 local EventFrame2 = CreateFrame("Frame")
 EventFrame2:RegisterEvent("PLAYER_LOGIN")
 EventFrame2:SetScript("OnEvent", function(self,event,...) 
-	LogAnything_Frame:Show()
 end)
 
-function LogAnything_ShowMessage()
+
+LogAnything_Frame:SetScript("OnUpdate", function(self, elapsed)
 	ChatFrame1:AddMessage('test')
-  end
+end)
 
 function getInfos()
 	local info = GetLootInfo();
@@ -64,7 +65,7 @@ function showInfos(table)
   end
 
   function addToMap (item, name) 
-	DEFAULT_CHAT_FRAME.editBox:SetText('/way ' .. item.zone .. ' ' .. item.posX .. ' ' .. item.posY .. ' ' .. name .. '(' .. item.count .. ')') 
+	DEFAULT_CHAT_FRAME.editBox:SetText('/tway ' .. item.zone .. ' ' .. item.posX .. ' ' .. item.posY .. ' ' .. name .. '(' .. item.count .. ')') 
 	ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
   end
 
