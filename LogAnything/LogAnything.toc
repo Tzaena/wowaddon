@@ -3,6 +3,8 @@
 ## Author: Tza
 ## Version: 1.0
 ## SavedVariablesPerCharacter: LootInfos
+## SavedVariables: LA_ItemArray
+## SavedVariables: LA_Parameters
 
 interface.xml
 main.lua
