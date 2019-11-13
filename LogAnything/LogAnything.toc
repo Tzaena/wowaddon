@@ -1,0 +1,8 @@
+## Interface: 80205
+## Title: Log Anything
+## Author: Tza
+## Version: 1.0
+## SavedVariablesPerCharacter: LootInfos
+
+main.lua
+interface.xml

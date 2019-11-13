@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+ <Script file="main.lua"/>
+ <Scripts>
+  <OnLoad>
+        LogAnything_ShowMessage()
+  </OnLoad>
+ </Scripts>
+ <Frame name="LogAnything_Frame">
+ <Size><AbsDimension x="100" y="100"/></Size>
+  <Anchors>
+    <Anchor point="CENTER"/>
+  </Anchors>
+  <Frames>
+    <Button name="LogAnything_Button">
+      <Anchors>
+        <Anchor point="CENTER"/>
+      </Anchors>
+    </Button>
+  </Frames>
+</Frame>
+</Ui>
