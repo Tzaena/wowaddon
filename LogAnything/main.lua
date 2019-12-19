@@ -6,27 +6,29 @@ EventFrameLoot:RegisterEvent("LOOT_OPENED")
 EventFrameLoot:SetScript("OnEvent", function(self,event,...) 
 	-- Event trigger lorsqu'on ouvre une fenêtre de loot
 	setLootInfos()
-	LogAnything_Frame:Show()
 end)
 local EventFrameLogin = CreateFrame("Frame")
 EventFrameLogin:RegisterEvent("PLAYER_LOGIN")
 EventFrameLogin:SetScript("OnEvent", function(self,event,...) 
 	-- Event trigger au login
-	LA_ItemArray = LootInfos
-	showInfos(LA_LootInfos)
+	LogAnything_Frame:Hide()
 	initialize()
-	setSelected('Gelée délayée', true)
+	--setSelected('Gelée délayée', true)
+	--showSelectedOnMap()
 end)
 
 
-LogAnything_Frame:SetScript("OnUpdate", function(self, elapsed)
-	ChatFrame1:AddMessage('test')
+LogAnything_Button:SetScript("OnClick", function(self, elapsed)
+	ChatFrame1:AddMessage('**')
+end)
+LogAnything_Frame:SetScript("OnMouseUp",function(self,button)
+	ChatFrame1:AddMessage('**')
 end)
 
 -- initialisation des variables globales
 function initialize()
-	if type(LootInfos) ~= "table" then
-		LootInfos = {}
+	if type(LA_ItemArray) ~= "table" then
+		LA_ItemArray = {}
 	end
 	if type(LA_Parameters) == "nil" then
 		LA_Parameters = {
@@ -34,6 +36,30 @@ function initialize()
 		}
 	end
 end
+
+
+local function AdddToMap(msg, editbox)
+	showSelectedOnMap()
+  end
+  local function SwapItem(msg, editbox)
+	  setSelected(msg)
+	end
+  
+  SLASH_LAADDTOMAP1 = '/lamap'
+  
+  SlashCmdList["LAADDTOMAP"] = AdddToMap
+
+  local function ShowAllItems(msg, editbox)
+	showInfos(msg, true)
+  end
+  
+  SLASH_LASHOWALL1 = '/lashow'
+  SLASH_LAADDTOMAP1 = '/lamap'
+  SLASH_LASWAP1 = '/laswap'
+  
+  SlashCmdList["LASHOWALL"] = ShowAllItems
+  SlashCmdList["LAADDTOMAP"] = AdddToMap
+  SlashCmdList["LASWAP"] = SwapItem
 
 --*********************** ITEMS ***********************
 
@@ -51,8 +77,8 @@ function addPositionToItem(item)
 	local pos = C_Map.GetPlayerMapPosition(map, "player")
 	local posX = round2(pos.x * 100,2)
 	local posY = round2(pos.y * 100,2)
-	if type(LootInfos[item]) ~= "table" then
-		LootInfos[item] = {}
+	if type(LA_ItemArray[item]) ~= "table" then
+		LA_ItemArray[item] = {}
 	end
 	local itemPosition = {
 		posX = posX,
@@ -60,13 +86,13 @@ function addPositionToItem(item)
 		zone = GetZoneText(),
 		count = 1
 		}
-	local position = nearPosition(LootInfos[item], itemPosition, 0.5)
+	local position = nearPosition(LA_ItemArray[item], itemPosition, 0.5)
 	if position > 0 then
-		LootInfos[item][position].count =LootInfos[item][position].count + 1
-		ChatFrame1:AddMessage(LootInfos[item][position].count)
+		LA_ItemArray[item][position].count =LA_ItemArray[item][position].count + 1
+		ChatFrame1:AddMessage(LA_ItemArray[item][position].count)
 	else
-		LootInfos[item][tablelength(LootInfos[item])] = itemPosition
-		addToMap(itemPosition, item)
+		LA_ItemArray[item][tablelength(LA_ItemArray[item])] = itemPosition
+		--addToMap(itemPosition, item)
 	end
 end
 
@@ -83,30 +109,30 @@ end
   end
   
 -- affiche les informations dans les messages
-function showInfos(table)
-	for key,value in pairs(table) do 
-		if key == 'Gelée délayée' then
+function showInfos(name, detail)
+	for key,value in pairs(LA_ItemArray) do 
+		if key == name then
 			ChatFrame1:AddMessage('**' .. key)
-			for key2,item in pairs(value) do 
-				ChatFrame1:AddMessage( item.zone .. ' ' .. item.posX .. ' ' .. item.posY .. ' ' .. item.count)
+			if detail == true then
+				for key2,item in pairs(value) do 
+					ChatFrame1:AddMessage( item.zone .. ' ' .. item.posX .. ' ' .. item.posY .. ' ' .. item.count)
+				end
 			end
-		else
 		end
 	end
   end
   
 -- sélectionne un item
-function setSelected(name, state)
-	LA_Parameters.selectedItems[name] = state
+function setSelected(name)
+	LA_Parameters.selectedItems[name] = not LA_Parameters.selectedItems[name]
 end
   
 --*********************** CARTE ***********************
 
 -- vide la carte et affiche à la place tous les items sélectionnés
 function showSelectedOnMap()
-	deleteAll()
 	for key,value in pairs(LA_Parameters.selectedItems) do 
-		if value then
+		if value == true then
 			showOnMap(key)
 		end
 	end	
@@ -114,7 +140,7 @@ end
 
 -- affiche sur la carte toutes les positions d'un item donné
 function showOnMap(name)
-	local item = LootInfos[name]
+	local item = LA_ItemArray[name]
 	for key,value in pairs(item) do 
 		addToMap(value, name)
 	end
